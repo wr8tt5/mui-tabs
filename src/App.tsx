@@ -11,6 +11,7 @@ type TabStatus = { name: 'inactive' } |
 interface Tab {
     tabId: string
     status: TabStatus
+    statusMessage: string
     pendingAction: Promise<void>
 }
 
@@ -40,6 +41,7 @@ export function App() {
             return { ...latest, activeTabId, tabs: [ ...latest.tabs, {
                 tabId,
                 status: { name: 'inactive' },
+                statusMessage: 'Activating tab...',
                 // Set tab status to 'active'
                 pendingAction: tabActivate(tabId, setTabList)
             }]}
@@ -103,6 +105,7 @@ export function App() {
                         setTabList(latest => {
                             const idx = latest.tabs.findIndex(tab => tab.tabId == activeTabId)
                             if (idx > -1) {
+                                latest.tabs[idx].statusMessage = 'Activating tab...'
                                 latest.tabs[idx].pendingAction = tabActivate(activeTabId, setTabList)
                             }
                             return { ...latest }
@@ -127,6 +130,7 @@ export function App() {
                                 const idx = latest.tabs.findIndex(tab => tab.tabId == activeTabId)
                                 if (idx > -1) {
                                     console.log('deactivate tab', latest.tabs[idx])
+                                    latest.tabs[idx].statusMessage = 'Deactivating tab'
                                     latest.tabs[idx].pendingAction = tabDeactivate(activeTabId, setTabList)
                                 }
                                 return { ...latest }
@@ -166,7 +170,7 @@ export function App() {
                             key={tab.tabId}
                             value={tab.tabId}
                         >
-                            {`id=${tab.tabId} status=${tab.status.name}`}
+                            {`id=${tab.tabId} status=${tab.status.name} message=${tab.statusMessage}`}
                         </TabPanel>
                     ))
                 }
@@ -180,14 +184,14 @@ function delay(ms: number) {
 }
 
 function tabActivate(tabId: string, setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
-    return tabStatusUpdate(tabId, 'active', setTabList)
+    return tabStatusUpdate(tabId, 'active', 'Tab activated', setTabList)
 }
 
 function tabDeactivate(tabId: string, setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
-    return tabStatusUpdate(tabId, 'inactive', setTabList)
+    return tabStatusUpdate(tabId, 'inactive', 'Tab deactivated', setTabList)
 }
 
-function tabStatusUpdate(tabId: string, newStatus: 'inactive' | 'active', setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
+function tabStatusUpdate(tabId: string, newStatus: 'inactive' | 'active', statusMessage: string, setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
     return new Promise<void>(resolve => {
         delay(1000).then(() => {
             // Update status
@@ -195,6 +199,7 @@ function tabStatusUpdate(tabId: string, newStatus: 'inactive' | 'active', setTab
                 const idx = tabList.tabs.findIndex(tab => tab.tabId == tabId)
                 if (idx > -1) {
                     tabList.tabs[idx].status = { name: newStatus }
+                    tabList.tabs[idx].statusMessage = statusMessage
                 }
                 resolve()
                 return { ...tabList }
