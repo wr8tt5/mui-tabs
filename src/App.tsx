@@ -6,9 +6,6 @@ import React from 'react';
 type TabStatus = { name: 'inactive' } |
 {
     name: 'active'
-} |
-{
-    name: 'closed'
 }
 
 interface Tab {
@@ -110,8 +107,6 @@ export function App() {
                             }
                             return { ...latest }
                         })
-                    } else if (tab.status.name == 'closed') {
-                        console.log(`Unexpected state of closed for tabId ${activeTabId}`)
                     } else {
                         console.log(`Tab ${activeTabId} already active`)
                     }
@@ -136,8 +131,6 @@ export function App() {
                                 }
                                 return { ...latest }
                             })
-                        } else if (tab.status.name == 'closed') {
-                            console.log(`Unexpected state of closed for tabId ${activeTabId}`)
                         } else {
                             console.log(`Tab ${activeTabId} already inactive`)
                         }
@@ -194,7 +187,7 @@ function tabDeactivate(tabId: string, setTabList: React.Dispatch<React.SetStateA
     return tabStatusUpdate(tabId, 'inactive', setTabList)
 }
 
-function tabStatusUpdate(tabId: string, newStatus: 'inactive' | 'active' | 'closed', setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
+function tabStatusUpdate(tabId: string, newStatus: 'inactive' | 'active', setTabList: React.Dispatch<React.SetStateAction<TabList>>) {
     return new Promise<void>(resolve => {
         delay(1000).then(() => {
             // Update status
