@@ -88,7 +88,7 @@ export function App() {
             } else {
                 console.log(`tab ${tabId} not found on close`)
             }
-            return { ...latest }
+            return latest
         })
     }, [])
 
@@ -115,7 +115,7 @@ export function App() {
                     }
                 })
             }
-            return { ...latest }
+            return latest
         })
         return () => {
             // Deactivate tab
@@ -140,7 +140,7 @@ export function App() {
                         }
                     })
                 }
-                return { ...latest }
+                return latest
             })
         }
     }, [tabList.activeTabId, setTabList])
